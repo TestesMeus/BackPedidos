@@ -3,9 +3,11 @@ const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 
-// SEUS DADOS FORNECIDOS
+const app = express();
+
+// 🔐 Suas configs
 const TOKEN = '7676057131:AAELLtx8nzc4F1_PbMGxE-7R3sCvM1lufdM';
-const API_KEY = 'PRe'; // Crie uma chave secreta
+const API_KEY = 'PRe';
 
 // 🧠 Mapeia cada contrato para um grupo do Telegram
 const contratosToChatId = {
@@ -15,17 +17,25 @@ const contratosToChatId = {
   "10/2021 - Eletricá Predial": "-4653709864"
 };
 
+// 🤖 Inicializa o bot
 const bot = new TelegramBot(TOKEN, { polling: true });
-const app = express();
 
-app.use(cors());
+// 🌐 CORS configurado para Vercel
+app.use(cors({
+  origin: 'https://pedidos-marica.vercel.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
+// Log para mensagens recebidas (debug)
 bot.on('message', (msg) => {
   console.log('💬 Mensagem recebida em:', msg.chat.title);
   console.log('🆔 chatId:', msg.chat.id);
 });
-// Rota para receber pedidos do React
+
+// 📬 Rota de envio
 app.post('/enviar-pedido', (req, res) => {
   if (req.headers['authorization'] !== API_KEY) {
     return res.status(403).json({ error: 'Acesso não autorizado' });
@@ -35,7 +45,6 @@ app.post('/enviar-pedido', (req, res) => {
   const contratoLimpo = contrato.trim();
   const chatId = contratosToChatId[contratoLimpo];
 
-;
   console.log('📝 Contrato recebido:', contrato);
   console.log('📨 Enviando para o grupo (chatId):', chatId);
 
@@ -57,5 +66,6 @@ app.post('/enviar-pedido', (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
-const PORT = 3001;
+// 🚀 Porta do servidor
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`✅ Bot rodando na porta ${PORT}`));
