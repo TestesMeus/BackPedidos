@@ -24,6 +24,11 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "https://pedidos-marica.vercel.app");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204); // No Content (responde o preflight)
