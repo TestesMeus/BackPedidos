@@ -20,15 +20,13 @@ const contratosToChatId = {
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 // 🌐 CORS com preflight
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://pedidos-marica.vercel.app");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // No Content (responde o preflight)
-  }
-  next();
-});
+const corsOptions = {
+  origin: 'https://pedidos-marica.vercel.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 
 // Também habilita express.json()
 app.use(express.json());
