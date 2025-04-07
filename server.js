@@ -9,7 +9,6 @@ const app = express();
 const TOKEN = '7676057131:AAELLtx8nzc4F1_PbMGxE-7R3sCvM1lufdM';
 const API_KEY = 'PRe';
 
-// 🧠 Mapeia cada contrato para um grupo do Telegram
 const contratosToChatId = {
   "117/2023 - Esporte Maricá": "-4765938730",
   "267/2023 - Predial Maricá": "-1002652489871",
@@ -20,12 +19,18 @@ const contratosToChatId = {
 // 🤖 Inicializa o bot
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-// 🌐 CORS configurado para Vercel
-app.use(cors({
-  origin: 'https://pedidos-marica.vercel.app',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// 🌐 CORS mais completo (com preflight)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://pedidos-marica.vercel.app");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204); // No Content (responde o preflight)
+  }
+
+  next();
+});
 
 app.use(express.json());
 
@@ -66,6 +71,5 @@ app.post('/enviar-pedido', (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
-// 🚀 Porta do servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`✅ Bot rodando na porta ${PORT}`));
