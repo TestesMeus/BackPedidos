@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 
 // SEUS DADOS FORNECIDOS
-const TOKEN = '7676057131:AAFaECPu6qGI37VapXoOi8-zVxOoUXykK9U';
+const TOKEN = '7676057131:AAELLtx8nzc4F1_PbMGxE-7R3sCvM1lufdM';
 const API_KEY = 'PRe'; // Crie uma chave secreta
 
 // 🧠 Mapeia cada contrato para um grupo do Telegram
