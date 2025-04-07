@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 
-// 🔐 Configurações diretas (uso interno)
+// 🔐 Configs diretas para uso interno
 const TOKEN = '7676057131:AAELLtx8nzc4F1_PbMGxE-7R3sCvM1lufdM';
 const API_KEY = 'PRe';
 
@@ -15,29 +15,26 @@ const contratosToChatId = {
   "10/2021 - Eletricá Predial": "-4653709864"
 };
 
-// 🤖 Inicializa o bot do Telegram
+// 🤖 Inicia o bot do Telegram
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-// 🌐 CORS com suporte a preflight (OPTIONS)
+// 🌐 CORS configurado corretamente
 const corsOptions = {
   origin: 'https://pedidos-marica.vercel.app',
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Suporte ao preflight
-
-// 📦 Middleware para JSON
 app.use(express.json());
 
-// 🧪 Loga mensagens recebidas no bot
+// 🔍 Debug de mensagens recebidas no Telegram
 bot.on('message', (msg) => {
   console.log('💬 Mensagem recebida em:', msg.chat.title);
   console.log('🆔 chatId:', msg.chat.id);
 });
 
-// 📬 Endpoint para receber pedidos
+// 📬 Endpoint de envio
 app.post('/enviar-pedido', (req, res) => {
   if (req.headers['authorization'] !== API_KEY) {
     return res.status(403).json({ error: 'Acesso não autorizado' });
@@ -46,9 +43,6 @@ app.post('/enviar-pedido', (req, res) => {
   const { contrato, encarregado, obra, solicitante, materiais } = req.body;
   const contratoLimpo = contrato.trim();
   const chatId = contratosToChatId[contratoLimpo];
-
-  console.log('📝 Contrato recebido:', contrato);
-  console.log('📨 Enviando para o grupo (chatId):', chatId);
 
   if (!chatId) {
     return res.status(400).json({ error: 'Contrato não encontrado ou sem grupo associado' });
@@ -71,7 +65,7 @@ app.post('/enviar-pedido', (req, res) => {
     });
 });
 
-// 🚀 Inicia servidor
+// 🚀 Inicializa o servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ Bot rodando na porta ${PORT}`);
